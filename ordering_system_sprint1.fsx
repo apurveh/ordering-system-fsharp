@@ -44,9 +44,9 @@ let getDrinkPrice (drink: Drink) =
     | Juice (AppleJuice, Small) -> 3.0
     | Juice (AppleJuice, Medium) -> 3.5
     | Juice (AppleJuice, Large) -> 4.0
-    | Juice (Mango, Small) -> 3.5
-    | Juice (Mango, Medium) -> 4.0
-    | Juice (Mango, Large) -> 4.5
+    | Juice (MangoJuice, Small) -> 3.5
+    | Juice (MangoJuice, Medium) -> 4.0
+    | Juice (MangoJuice, Large) -> 4.5
 
 let getFoodPrice (food: FoodType) =
     match food with
@@ -73,4 +73,3 @@ let order3 = Fruit Apple
 printfn "Price of order1: %.2f" (getProductPrice order1)
 printfn "Price of order2: %.2f" (getProductPrice order2)
 printfn "Price of order3: %.2f" (getProductPrice order3)
-
