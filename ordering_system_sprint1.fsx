@@ -8,9 +8,10 @@ type Drink =
     | Coffee of CoffeeType * DrinkSize
     | Tea of TeaType * DrinkSize
     | Juice of JuiceType * DrinkSize
+    | Soda of DrinkSize
+    | Milk of DrinkSize
 
-type FoodType = Sandwich | Salad | Pasta
-
+type FoodType = Sandwich | Burger | Salad
 type FruitType = Apple | Banana | Orange
 
 type Product =
@@ -18,58 +19,64 @@ type Product =
     | Food of FoodType
     | Fruit of FruitType
 
-let getDrinkPrice (drink: Drink) =
+let computeDrinkPrice (drink: Drink) =
     match drink with
-    | Coffee (Espresso, Small) -> 2.5
-    | Coffee (Espresso, Medium) -> 3.0
-    | Coffee (Espresso, Large) -> 3.5
-    | Coffee (Latte, Small) -> 3.0
-    | Coffee (Latte, Medium) -> 3.5
-    | Coffee (Latte, Large) -> 4.0
-    | Coffee (Cappuccino, Small) -> 3.5
-    | Coffee (Cappuccino, Medium) -> 4.0
-    | Coffee (Cappuccino, Large) -> 4.5
-    | Tea (GreenTea, Small) -> 2.0
-    | Tea (GreenTea, Medium) -> 2.5
-    | Tea (GreenTea, Large) -> 3.0
-    | Tea (BlackTea, Small) -> 2.0
-    | Tea (BlackTea, Medium) -> 2.5
-    | Tea (BlackTea, Large) -> 3.0
-    | Tea (HerbalTea, Small) -> 2.5
-    | Tea (HerbalTea, Medium) -> 3.0
-    | Tea (HerbalTea, Large) -> 3.5
-    | Juice (OrangeJuice, Small) -> 3.0
-    | Juice (OrangeJuice, Medium) -> 3.5
-    | Juice (OrangeJuice, Large) -> 4.0
-    | Juice (AppleJuice, Small) -> 3.0
-    | Juice (AppleJuice, Medium) -> 3.5
-    | Juice (AppleJuice, Large) -> 4.0
-    | Juice (MangoJuice, Small) -> 3.5
-    | Juice (MangoJuice, Medium) -> 4.0
-    | Juice (MangoJuice, Large) -> 4.5
+    | Coffee (Espresso, Small) -> 20
+    | Coffee (Espresso, Medium) -> 25
+    | Coffee (Espresso, Large) -> 30
+    | Coffee (Latte, Small) -> 25
+    | Coffee (Latte, Medium) -> 30
+    | Coffee (Latte, Large) -> 35
+    | Coffee (Cappuccino, Small) -> 30
+    | Coffee (Cappuccino, Medium) -> 35
+    | Coffee (Cappuccino, Large) -> 40
+    | Tea (BlackTea, Small) -> 15
+    | Tea (BlackTea, Medium) -> 20
+    | Tea (BlackTea, Large) -> 25
+    | Tea (GreenTea, Small) -> 20
+    | Tea (GreenTea, Medium) -> 25
+    | Tea (GreenTea, Large) -> 30
+    | Tea (HerbalTea, Small) -> 25
+    | Tea (HerbalTea, Medium) -> 30
+    | Tea (HerbalTea, Large) -> 35
+    | Juice (OrangeJuice, Small) -> 30
+    | Juice (OrangeJuice, Medium) -> 35
+    | Juice (OrangeJuice, Large) -> 40
+    | Juice (AppleJuice, Small) -> 30
+    | Juice (AppleJuice, Medium) -> 35
+    | Juice (AppleJuice, Large) -> 40
+    | Juice (MangoJuice, Small) -> 35
+    | Juice (MangoJuice, Medium) -> 40
+    | Juice (MangoJuice, Large) -> 45
+    | Soda Small -> 15
+    | Soda Medium -> 20
+    | Soda Large -> 25
+    | Milk Small -> 10
+    | Milk Medium -> 15
+    | Milk Large -> 20
 
-let getFoodPrice (food: FoodType) =
+let computeFoodPrice (food: FoodType) =
     match food with
-    | Sandwich -> 5.0
-    | Salad -> 4.5
-    | Pasta -> 6.5
+    | Sandwich -> 50
+    | Burger -> 70
+    | Salad -> 45
 
-let getFruitPrice (fruit: FruitType) =
+let computeFruitPrice (fruit: FruitType) =
     match fruit with
-    | Apple -> 1.5
-    | Banana -> 1.0
-    | Orange -> 1.2
+    | Apple -> 10
+    | Banana -> 8
+    | Orange -> 12
 
-let getProductPrice (product: Product) =
+let computeProductPrice (product: Product) =
     match product with
-    | Drink d -> getDrinkPrice d
-    | Food f -> getFoodPrice f
-    | Fruit fr -> getFruitPrice fr
+    | Drink d -> computeDrinkPrice d
+    | Food f -> computeFoodPrice f
+    | Fruit fr -> computeFruitPrice fr
 
 let order1 = Drink (Coffee (Latte, Medium))
 let order2 = Food Sandwich
 let order3 = Fruit Apple
 
-printfn "Price of order1: %.2f" (getProductPrice order1)
-printfn "Price of order2: %.2f" (getProductPrice order2)
-printfn "Price of order3: %.2f" (getProductPrice order3)
+printfn "Price of order1: %d DKK" (computeProductPrice order1)
+printfn "Price of order2: %d DKK" (computeProductPrice order2)
+printfn "Price of order3: %d DKK" (computeProductPrice order3)
