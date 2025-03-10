@@ -1,3 +1,6 @@
+open System
+open System.Threading
+
 type DrinkSize = Small | Medium | Large
 
 type CoffeeType = Espresso | Latte | Cappuccino
@@ -18,6 +21,10 @@ type Product =
     | Drink of Drink
     | Food of FoodType
     | Fruit of FruitType
+
+type PaymentType = Cash | CreditCard | MobilePay
+type Customer = { Name: string; Payment: PaymentType }
+type Order = { Customer: Customer; Product: Product; Quantity: int }
 
 let computeDrinkPrice (drink: Drink) =
     match drink with
@@ -73,10 +80,50 @@ let computeProductPrice (product: Product) =
     | Food f -> computeFoodPrice f
     | Fruit fr -> computeFruitPrice fr
 
-let order1 = Drink (Coffee (Latte, Medium))
-let order2 = Food Sandwich
-let order3 = Fruit Apple
+let gtgVAT percent x = x + (float percent / 100.0) * x
 
-printfn "Price of order1: %d DKK" (computeProductPrice order1)
-printfn "Price of order2: %d DKK" (computeProductPrice order2)
-printfn "Price of order3: %d DKK" (computeProductPrice order3)
+type OrderProductMsg =
+    | OrderDrink of Drink * qty:int
+    | OrderFood of FoodType * qty:int
+    | OrderFruit of FruitType * qty:int
+    | LeaveComment of string
+
+type gtgAgent() =
+    let agent = MailboxProcessor<OrderProductMsg>.Start(fun inbox ->
+        let rec messageLoop () = async {
+            let! msg = inbox.Receive()
+            match msg with
+            | OrderDrink (drink, quantity) ->
+                let basePrice = float (computeDrinkPrice drink) * float quantity
+                let totalPrice = gtgVAT 7.5 basePrice
+                let formattedDrink =
+                    match drink with
+                    | Coffee (coffeeType, size) -> sprintf "%s Coffee (%s)" (coffeeType.ToString()) (size.ToString())
+                    | Tea (teaType, size) -> sprintf "%s Tea (%s)" (teaType.ToString()) (size.ToString())
+                    | Juice (juiceType, size) -> sprintf "%s Juice (%s)" (juiceType.ToString()) (size.ToString())
+                    | Soda size -> sprintf "Soda (%s)" (size.ToString())
+                    | Milk size -> sprintf "Milk (%s)" (size.ToString())
+                printfn "Please pay DKK%.2f for your %d %s drink(s). Thanks!" totalPrice quantity formattedDrink
+            | OrderFood (food, quantity) ->
+                let basePrice = float (computeFoodPrice food) * float quantity
+                let totalPrice = gtgVAT 7.5 basePrice
+                let formattedFood = sprintf "%s" (food.ToString())
+                printfn "Please pay DKK%.2f for your %d %s food item(s). Thanks!" totalPrice quantity formattedFood
+            | OrderFruit (fruit, quantity) ->
+                let basePrice = float (computeFruitPrice fruit) * float quantity
+                let totalPrice = gtgVAT 7.5 basePrice
+                let formattedFruit = sprintf "%s" (fruit.ToString())
+                printfn "Please pay DKK%.2f for your %d %s fruit item(s). Thanks!" totalPrice quantity formattedFruit
+            | LeaveComment comment ->
+                printfn "Thank you for your feedback: %s" comment
+            return! messageLoop()
+        }
+        messageLoop()
+    )
+    member this.Post msg = agent.Post msg
+
+let agent = gtgAgent()
+agent.Post (OrderDrink (Coffee (Latte, Small), 2))
+agent.Post (OrderFood (Burger, 1))
+agent.Post (OrderFruit (Apple, 3))
+agent.Post (LeaveComment "Great service!")
